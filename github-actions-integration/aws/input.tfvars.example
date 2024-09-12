@@ -1,0 +1,10 @@
+openid_connect_url = "https://token.actions.githubusercontent.com"
+client_id_list = [
+  "sts.amazonaws.com",
+]
+role_session_name = "Terraform-Github-OIDC-AWS"
+aws_region = "us-east-1"
+
+github_username = ""
+github_repo_name = ""
+github_pat = ""
