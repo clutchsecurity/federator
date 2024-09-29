@@ -1,8 +1,21 @@
-![Asset_1_reduced](https://github.com/user-attachments/assets/dad3f718-7e60-488b-92e0-61ee71b46837)
-# Clutch Terraform Code Examples
+<p align="center">
+  <img alt="Clutch Logo" src="https://github.com/user-attachments/assets/dad3f718-7e60-488b-92e0-61ee71b46837" />
+  <h2 align="center">Clutch Terraform Code Examples</h2>
+  <p align="center">Federate your identities!</p>
+</p>
+
+---
+
+<div align="center">
+
+[![License](https://img.shields.io/badge/license-GPL--3.0-brightgreen)](/LICENSE)
+
+</div>
+
+---
+CSP = Cloud Service Providers
 
 ## Cross Cloud Integration
-CSP = Cloud Service Providers
 This aims to configure resources in one CSP to query resources in other CSP.
 
 * [AWS -> GCP Integration (Includes Demo Video)](./cross-cloud-integration/aws->gcp/README.md)
