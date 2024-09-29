@@ -1,9 +1,8 @@
-# Terraform CSPs Integration
-
-CSP - Cloud Service Providers
+![Asset_1_reduced](https://github.com/user-attachments/assets/dad3f718-7e60-488b-92e0-61ee71b46837)
+# Clutch Terraform Code Examples
 
 ## Cross Cloud Integration
-
+CSP = Cloud Service Providers
 This aims to configure resources in one CSP to query resources in other CSP.
 
 * [AWS -> GCP Integration (Includes Demo Video)](./cross-cloud-integration/aws->gcp/README.md)
