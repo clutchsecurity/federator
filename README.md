@@ -13,7 +13,11 @@
 </div>
 
 ---
-CSP = Cloud Service Providers
+# This initiative is part of Clutch Security's [NHI Index](https://non-human.id/)
+
+As part of the project, we offer essential resources and practical guides on enabling inter-cloud connectivity and establishing **OpenID Connect (OIDC)** between cloud service providers (CSPs) and version control systems.
+
+Our resources, including **Terraform files** and detailed, step-by-step tutorials, empower organizations to transition from static, long-lived NHIs to ephemeral ones—drastically reducing their attack surface and strengthening their overall security posture.
 
 ## Cross Cloud Integration
 This aims to configure resources in one CSP to query resources in other CSP.
