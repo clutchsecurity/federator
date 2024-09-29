@@ -1,6 +1,6 @@
 <p align="center">
   <img alt="Clutch Logo" src="https://github.com/user-attachments/assets/dad3f718-7e60-488b-92e0-61ee71b46837" />
-  <h2 align="center">Clutch Terraform Code Examples</h2>
+  <h2 align="center">Clutch Federator Terraform Code Examples</h2>
   <p align="center">Federate your identities!</p>
 </p>
 
