@@ -7,6 +7,9 @@ resource "aws_cognito_identity_pool" "my_identity_pool" {
 
 # Resource definition for an IAM policy specifically for the Cognito Identity Pool.
 # This policy grants permissions for specific Cognito actions.
+# IMPORTANT: Misuse of AWS Cognito Identity Pools can lead to security vulnerabilities.
+# Ensure all resources with access to Cognito Identity Pools are strictly limited to the minimum necessary.
+# Properly manage IAM policies to prevent unauthorized access and protect your identity pools.
 resource "aws_iam_policy" "cognito_policy" {
   depends_on = [ aws_cognito_identity_pool.my_identity_pool ]
   name        = "${var.prefix}-cognito-policy"
