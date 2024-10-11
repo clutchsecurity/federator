@@ -47,3 +47,10 @@ terraform destroy
 ## NOTE
 
 There's no in-built terraform module to get OpenID Connect token, `aws cognito-identity get-open-id-token-for-developer-identity`. This command will be executed on the local machine using terraform's `external` provider.
+
+## Security Considerations
+Misconfigured access to AWS Cognito Identity Pools can result in security vulnerabilities.
+
+**Ensure that all resources accessing the Cognito Identity Pool are restricted to the minimum necessary permissions.**
+
+It is crucial to properly manage IAM policies to limit access to only the required identity pools. Failing to do so may allow unintended services or instances to gain access to identity pools, posing a security risk.
