@@ -3,8 +3,7 @@ cat <<'EOF' > /etc/profile.d/set_env_vars.sh
 #!/bin/bash
 
 echo "Installing prerequisites..."
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-sudo apt update && sudo apt -y install jq unzip
+curl -L https://aka.ms/InstallAzureCli | bash
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install

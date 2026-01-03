@@ -1,3 +1,59 @@
+# VPC for the demo EC2 instance
+resource "aws_vpc" "demo" {
+  provider             = aws.ec2-region
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
+  tags = {
+    Name = "${var.prefix}-vpc"
+  }
+}
+
+# Internet Gateway for public internet access
+resource "aws_internet_gateway" "demo" {
+  provider = aws.ec2-region
+  vpc_id   = aws_vpc.demo.id
+
+  tags = {
+    Name = "${var.prefix}-igw"
+  }
+}
+
+# Public subnet for the EC2 instance
+resource "aws_subnet" "demo" {
+  provider                = aws.ec2-region
+  vpc_id                  = aws_vpc.demo.id
+  cidr_block              = "10.0.1.0/24"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "${var.prefix}-subnet"
+  }
+}
+
+# Route table for the public subnet
+resource "aws_route_table" "demo" {
+  provider = aws.ec2-region
+  vpc_id   = aws_vpc.demo.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.demo.id
+  }
+
+  tags = {
+    Name = "${var.prefix}-rt"
+  }
+}
+
+# Associate route table with subnet
+resource "aws_route_table_association" "demo" {
+  provider       = aws.ec2-region
+  subnet_id      = aws_subnet.demo.id
+  route_table_id = aws_route_table.demo.id
+}
+
 # TLS private key resource for generating an RSA private key used for SSH access to EC2 instances.
 resource "tls_private_key" "demo_ssh_key" {
   algorithm = "RSA"
@@ -23,6 +79,7 @@ resource "aws_security_group" "sg_ec2" {
   provider    = aws.ec2-region
   name        = "${var.prefix}-sg_ec2"
   description = "Security group for EC2 instance"
+  vpc_id      = aws_vpc.demo.id
 
   ingress {
     from_port   = 22
@@ -36,6 +93,10 @@ resource "aws_security_group" "sg_ec2" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.prefix}-sg"
   }
 }
 
@@ -82,6 +143,7 @@ resource "aws_instance" "demo" {
   ami                    = var.aws_ec2_ami_id
   instance_type          = "t2.nano"
   key_name               = aws_key_pair.key_pair.key_name
+  subnet_id              = aws_subnet.demo.id
   vpc_security_group_ids = [aws_security_group.sg_ec2.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_federation_profile.id
   user_data = templatefile("${path.module}/tpl/aws-vm.tpl", {

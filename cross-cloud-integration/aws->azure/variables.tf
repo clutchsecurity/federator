@@ -16,13 +16,13 @@ variable "aws_ec2_region" {
 variable "aws_ec2_ami_id" {
   description = "AMI ID for the EC2 instance"
   type        = string
-  default     = "ami-0f58b397bc5c1f2e8"
+  default     = "ami-08d7aabbb50c2c24e"
 }
 
 # Variable to specify the default admin username for AWS EC2 instances.
 variable "aws_admin_user" {
   description = "Default admin user for the EC2 instance"
-  default     = "ubuntu"
+  default     = "ec2-user"
   type        = string
 }
 
