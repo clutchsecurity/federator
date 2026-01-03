@@ -5,6 +5,7 @@ resource "aws_iam_outbound_web_identity_federation" "this" {}
 
 # IAM policy granting permission to request web identity tokens.
 # This replaces the previous Cognito-based approach with direct STS token generation.
+# Restricted to only allow tokens for Azure federation audience.
 resource "aws_iam_policy" "web_identity_token_policy" {
   name        = "${var.prefix}-web-identity-token-policy"
   description = "Policy allowing EC2 instances to request web identity tokens for Azure federation"
@@ -15,6 +16,14 @@ resource "aws_iam_policy" "web_identity_token_policy" {
       Effect   = "Allow"
       Action   = "sts:GetWebIdentityToken"
       Resource = "*"
+      Condition = {
+        "ForAnyValue:StringEquals" = {
+          "sts:IdentityTokenAudience" = "api://AzureADTokenExchange"
+        }
+        NumericLessThanEquals = {
+          "sts:DurationSeconds" = 300
+        }
+      }
     }]
   })
 }
