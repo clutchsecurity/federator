@@ -1,8 +1,39 @@
 # Output the SSH command to connect to the AWS EC2 instance
 output "aws_ec2_ssh_login_command" {
+  description = "SSH command to connect to the EC2 instance"
   depends_on = [
     aws_instance.demo,
     random_string.random_suffix
   ]
   value = "ssh -i ${random_string.random_suffix.result}.pem ${var.aws_admin_user}@${aws_instance.demo.public_ip}"
+}
+
+# Output the AWS issuer identifier for the account
+output "aws_issuer_identifier" {
+  description = "AWS account's unique issuer identifier for outbound federation"
+  value       = aws_iam_outbound_web_identity_federation.this.issuer_identifier
+}
+
+# Output the IAM role ARN used for federation
+output "aws_federation_role_arn" {
+  description = "ARN of the IAM role used for Azure federation"
+  value       = aws_iam_role.ec2_federation_role.arn
+}
+
+# Output the Azure AD application client ID
+output "azure_app_client_id" {
+  description = "Azure AD application client ID"
+  value       = azuread_application.demo.client_id
+}
+
+# Output the Azure tenant ID
+output "azure_tenant_id" {
+  description = "Azure tenant ID"
+  value       = data.azurerm_client_config.current.tenant_id
+}
+
+# Output the command to get a web identity token from the EC2 instance
+output "get_token_command" {
+  description = "Command to get AWS web identity token (run from EC2 instance)"
+  value       = "aws sts get-web-identity-token --audience api://AzureADTokenExchange --signing-algorithm RS256 --duration-seconds 300"
 }

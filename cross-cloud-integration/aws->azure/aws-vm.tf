@@ -39,9 +39,9 @@ resource "aws_security_group" "sg_ec2" {
   }
 }
 
-# AWS IAM Role for EC2 instances, allowing them to assume certain policies and interact with other AWS services.
-resource "aws_iam_role" "ec2_cognito_role" {
-  name = "${var.prefix}-ec2_cognito_role"
+# AWS IAM Role for EC2 instances, allowing them to request web identity tokens for Azure federation.
+resource "aws_iam_role" "ec2_federation_role" {
+  name = "${var.prefix}-ec2-federation-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -55,32 +55,37 @@ resource "aws_iam_role" "ec2_cognito_role" {
   })
 }
 
-# Attaches a specified IAM policy to the created IAM role.
-resource "aws_iam_role_policy_attachment" "cognito_policy_attachment" {
-  depends_on = [ aws_iam_role.ec2_cognito_role, aws_iam_policy.cognito_policy ]
-  role       = aws_iam_role.ec2_cognito_role.name
-  policy_arn = aws_iam_policy.cognito_policy.arn
+# Attaches the web identity token policy to the IAM role.
+resource "aws_iam_role_policy_attachment" "web_identity_policy_attachment" {
+  depends_on = [aws_iam_role.ec2_federation_role, aws_iam_policy.web_identity_token_policy]
+  role       = aws_iam_role.ec2_federation_role.name
+  policy_arn = aws_iam_policy.web_identity_token_policy.arn
 }
 
 # Instance profile for EC2 that allows the use of the IAM role within EC2.
-resource "aws_iam_instance_profile" "ec2_cognito_profile" {
-  depends_on = [ aws_iam_role.ec2_cognito_role ]
-  name = "${var.prefix}-ec2_cognito_profile"
-  role = aws_iam_role.ec2_cognito_role.name
+resource "aws_iam_instance_profile" "ec2_federation_profile" {
+  depends_on = [aws_iam_role.ec2_federation_role]
+  name       = "${var.prefix}-ec2-federation-profile"
+  role       = aws_iam_role.ec2_federation_role.name
 }
 
-# AWS EC2 instance resource configured to use the defined resources like key pair, security group, and IAM profile.
+# AWS EC2 instance resource configured to use the defined resources.
 resource "aws_instance" "demo" {
-  depends_on             = [azuread_application.demo, aws_key_pair.key_pair, aws_iam_instance_profile.ec2_cognito_profile, azuread_application.demo, aws_cognito_identity_pool.my_identity_pool, data.azurerm_client_config.current ]
+  depends_on = [
+    azuread_application.demo,
+    aws_key_pair.key_pair,
+    aws_iam_instance_profile.ec2_federation_profile,
+    aws_iam_outbound_web_identity_federation.this,
+    data.azurerm_client_config.current,
+  ]
   provider               = aws.ec2-region
   ami                    = var.aws_ec2_ami_id
   instance_type          = "t2.nano"
   key_name               = aws_key_pair.key_pair.key_name
   vpc_security_group_ids = [aws_security_group.sg_ec2.id]
-  iam_instance_profile   = aws_iam_instance_profile.ec2_cognito_profile.id
+  iam_instance_profile   = aws_iam_instance_profile.ec2_federation_profile.id
   user_data = templatefile("${path.module}/tpl/aws-vm.tpl", {
     azuread_application_demo_client_id = azuread_application.demo.client_id,
-    identity_pool_id                   = aws_cognito_identity_pool.my_identity_pool.id,
     azure_tenant_id                    = data.azurerm_client_config.current.tenant_id,
   })
   tags = {

@@ -1,20 +1,15 @@
 # Random string resource definition to ensure unique resource names and avoid conflicts.
 resource "random_string" "random_suffix" {
-  length  = 5       # Length of the random string
-  special = false   # Excludes special characters for simplicity
-  upper   = false   # Ensures all characters are lowercase to maintain uniformity
+  length  = 5     # Length of the random string
+  special = false # Excludes special characters for simplicity
+  upper   = false # Ensures all characters are lowercase to maintain uniformity
 }
 
-# Variable for specifying the AWS region where resources will be deployed.
-variable "aws_cognito_region" {
-  type    = string
-  default = "us-east-1"
-}
-
-# Variable for specifying the specific AWS EC2 region, used particularly for EC2 resource deployments.
+# Variable for specifying the AWS region where EC2 resources will be deployed.
 variable "aws_ec2_region" {
-  type    = string
-  default = "ap-south-1"
+  description = "AWS region for EC2 instance deployment"
+  type        = string
+  default     = "us-east-1"
 }
 
 # Variable to define the AMI ID for deploying AWS EC2 instances.
@@ -31,27 +26,15 @@ variable "aws_admin_user" {
   type        = string
 }
 
-# Variable for specifying the OpenID Connect issuer URL, important for identity federation with AWS.
-variable "openid_connect_url" {
-  type     = string
-  default  = "https://cognito-identity.amazonaws.com"
-  nullable = false  # Ensures that an issuer URL is always defined
-}
-
-# Variable to specify the developer provider name in identity pools, useful for federated identity setups.
-variable "developer_provider_name" {
-  type    = string
-  default = "developerprovidername"
-}
-
-# Variable to specify the location for Azure resource groups, ensuring consistency across deployments.
+# Variable to specify the location for Azure resource groups.
 variable "resource_group_location" {
-  type     = string
-  default  = "East US"  # Default location for resource groups
-  nullable = false  # Ensures that a location is always specified for resource groups
+  description = "Location for Azure resource group"
+  type        = string
+  default     = "East US"
+  nullable    = false
 }
 
-# Variable to define a prefix for naming resources, aiding in their identification and management.
+# Variable to define a prefix for naming resources.
 variable "prefix" {
   description = "Prefix used to name the resources for easy identification"
   type        = string
