@@ -1,10 +1,8 @@
 # AWS to Azure
 
-![](../images/aws-to-azure-integration.png)
-
 ## Demo
 
-[![asciicast](https://asciinema.org/a/48b8z6EEvesDJZ7OwU3piDZyv.svg)](https://asciinema.org/a/48b8z6EEvesDJZ7OwU3piDZyv)
+[![asciicast](https://asciinema.org/a/xkGc0uKb2Hu5YtKIoa8AYphAa.svg)](https://asciinema.org/a/xkGc0uKb2Hu5YtKIoa8AYphAa)
 
 ## Setup
 
@@ -43,7 +41,3 @@ Post `terraform apply`, copy the ssh command from the output and login to the AW
 ```
 terraform destroy
 ```
-
-## NOTE
-
-There's no in-built terraform module to get OpenID Connect token, `aws cognito-identity get-open-id-token-for-developer-identity`. This command will be executed on the local machine using terraform's `external` provider.
