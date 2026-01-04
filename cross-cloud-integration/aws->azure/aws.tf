@@ -1,35 +1,29 @@
-# This identity pool configures identity providers and federations in AWS environments.
-resource "aws_cognito_identity_pool" "my_identity_pool" {
-  identity_pool_name               = "${var.prefix}-terraform"
-  allow_unauthenticated_identities = false
-  developer_provider_name = var.developer_provider_name
-}
+# Enable AWS IAM Outbound Web Identity Federation at the account level.
+# This creates a unique token issuer URL for the AWS account that can be used
+# to generate OIDC tokens for cross-cloud authentication.
+resource "aws_iam_outbound_web_identity_federation" "this" {}
 
-# Resource definition for an IAM policy specifically for the Cognito Identity Pool.
-# This policy grants permissions for specific Cognito actions.
-# IMPORTANT: Misuse of AWS Cognito Identity Pools can lead to security vulnerabilities.
-# Ensure all resources with access to Cognito Identity Pools are strictly limited to the minimum necessary.
-# Properly manage IAM policies to prevent unauthorized access and protect your identity pools.
-resource "aws_iam_policy" "cognito_policy" {
-  depends_on = [ aws_cognito_identity_pool.my_identity_pool ]
-  name        = "${var.prefix}-cognito-policy"
-  description = "Policy for Cognito actions on specific APIs"
+# IAM policy granting permission to request web identity tokens.
+# This replaces the previous Cognito-based approach with direct STS token generation.
+# Restricted to only allow tokens for Azure federation audience.
+resource "aws_iam_policy" "web_identity_token_policy" {
+  name        = "${var.prefix}-web-identity-token-policy"
+  description = "Policy allowing EC2 instances to request web identity tokens for Azure federation"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow"
-      Action = [
-        "cognito-identity:GetOpenIdTokenForDeveloperIdentity"
-      ]
-      Resource = aws_cognito_identity_pool.my_identity_pool.arn
+      Effect   = "Allow"
+      Action   = "sts:GetWebIdentityToken"
+      Resource = "*"
+      Condition = {
+        "ForAnyValue:StringEquals" = {
+          "sts:IdentityTokenAudience" = "api://AzureADTokenExchange"
+        }
+        NumericLessThanEquals = {
+          "sts:DurationSeconds" = 300
+        }
+      }
     }]
   })
-}
-
-# External data source to invoke an AWS CLI command via a bash script.
-# This command retrieves an OpenID Connect token for a specific developer identity.
-data "external" "aws_get_cognito_identity_local_execution" {
-  depends_on = [ aws_cognito_identity_pool.my_identity_pool ]
-  program = ["bash", "-c", "aws cognito-identity get-open-id-token-for-developer-identity --identity-pool-id ${aws_cognito_identity_pool.my_identity_pool.id} --logins ${var.developer_provider_name}=developer_provider_value --region ${var.aws_cognito_region}"]
 }

@@ -6,8 +6,8 @@ data "azuread_application_published_app_ids" "well_known" {}
 
 # Service principal data source for Microsoft Graph
 data "azuread_service_principal" "msgraph" {
-  depends_on = [ data.azuread_application_published_app_ids.well_known ]
-  client_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
+  depends_on = [data.azuread_application_published_app_ids.well_known]
+  client_id  = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
 }
 
 # Fetch all Azure AD service principals
@@ -22,7 +22,7 @@ resource "azuread_application" "demo" {
     data.azuread_application_published_app_ids.well_known,
     data.azuread_service_principal.msgraph,
   ]
-  display_name = "${var.prefix} Demo ${random_string.random_suffix.result}"
+  display_name     = "${var.prefix} Demo ${random_string.random_suffix.result}"
   sign_in_audience = "AzureADMyOrg"
 
   # Defining required access to specific Microsoft Graph APIs
@@ -51,8 +51,8 @@ resource "azurerm_resource_group" "demo" {
 
 # Service principal for the Azure AD application
 resource "azuread_service_principal" "demo" {
-  depends_on = [ azuread_application.demo ]
-  client_id = azuread_application.demo.client_id
+  depends_on = [azuread_application.demo]
+  client_id  = azuread_application.demo.client_id
 }
 
 # Role assignment to give the service principal necessary permissions within the resource group
@@ -66,22 +66,27 @@ resource "azurerm_role_assignment" "demo" {
   principal_id         = azuread_service_principal.demo.id
 }
 
-# Federated identity credential associated with the Azure AD application
+# Federated identity credential associated with the Azure AD application.
+# This uses AWS IAM Outbound Web Identity Federation instead of Cognito.
+# The issuer is the AWS account's token issuer URL and the subject is the IAM role ARN.
 resource "azuread_application_federated_identity_credential" "demo" {
   depends_on = [
     azuread_application.demo,
     azurerm_role_assignment.demo,
     azuread_app_role_assignment.demo,
     random_string.random_suffix,
-    aws_cognito_identity_pool.my_identity_pool,
-    data.external.aws_get_cognito_identity_local_execution,
+    aws_iam_outbound_web_identity_federation.this,
+    aws_iam_role.ec2_federation_role,
   ]
   display_name   = "${var.prefix}-demo-${random_string.random_suffix.result}"
   application_id = "/applications/${azuread_application.demo.object_id}"
-  issuer         = var.openid_connect_url
-  subject        = data.external.aws_get_cognito_identity_local_execution.result["IdentityId"]
-  description    = "Demo federated identity credential for secure integration"
-  audiences      = [aws_cognito_identity_pool.my_identity_pool.id]
+  # Use the AWS account's unique issuer identifier from the outbound federation resource
+  issuer = aws_iam_outbound_web_identity_federation.this.issuer_identifier
+  # The subject is the ARN of the IAM role that will request tokens
+  subject     = aws_iam_role.ec2_federation_role.arn
+  description = "Federated identity credential for AWS to Azure integration using AWS Outbound Identity Federation"
+  # Azure's standard audience for token exchange
+  audiences = ["api://AzureADTokenExchange"]
 }
 
 # Dynamic role assignment for the application based on required resource access

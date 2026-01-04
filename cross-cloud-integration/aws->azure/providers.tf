@@ -11,15 +11,11 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.112.0"
     }
-    # External provider for running external programs
-    external = {
-      source  = "hashicorp/external"
-      version = "~> 2.3.3"
-    }
     # AWS provider to manage Amazon Web Services resources
+    # Version 6.26+ required for aws_iam_outbound_web_identity_federation resource
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.58.0"
+      version = "~> 6.26.0"
     }
     # Azure AD provider to manage Azure Active Directory resources
     azuread = {
@@ -39,15 +35,15 @@ terraform {
   }
 }
 
-# AWS provider configuration for general region
+# AWS provider configuration
 provider "aws" {
-  region = var.aws_cognito_region  # Dynamically set the AWS region from variables
+  region = var.aws_ec2_region
 }
 
-# AWS provider configuration with an alias for a specific region (EC2 instances)
+# AWS provider configuration with an alias for EC2 specific operations
 provider "aws" {
-  region = var.aws_ec2_region  # Dynamically set the AWS region for EC2 specific operations
-  alias  = "ec2-region"       # Alias used to differentiate this configuration
+  region = var.aws_ec2_region
+  alias  = "ec2-region"
 }
 
 # Local provider configuration
@@ -58,10 +54,9 @@ provider "local" {
 # Azure AD provider configuration
 provider "azuread" {
   # This provider is used for managing Azure Active Directory resources
-  # Default configuration is used, no specific parameters set
 }
 
 # Azure RM provider configuration
 provider "azurerm" {
-  features {}  # Required empty block, needed even when no specific features are configured
+  features {}
 }
