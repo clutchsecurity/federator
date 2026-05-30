@@ -24,6 +24,8 @@ This aims to configure resources in one CSP to query resources in other CSP.
 
 * [AWS -> Azure Integration (Includes Demo Video)](./cross-cloud-integration/aws->azure/README.md)
 * [AWS -> GCP Integration (Includes Demo Video)](./cross-cloud-integration/aws->gcp/README.md)
+* [AWS -> OpenAI Integration](./cross-cloud-integration/aws->openai/README.md)
+* [AWS -> Snowflake Integration](./cross-cloud-integration/aws->snowflake/README.md)
 * [GCP -> AWS Integration (Includes Demo Video)](./cross-cloud-integration/gcp->aws/README.md)
 * [GCP -> Azure Integration (Includes Demo Video)](./cross-cloud-integration/gcp->azure/README.md)
 * [Azure -> AWS Integration (Includes Demo Video)](./cross-cloud-integration/azure->aws/README.md)
