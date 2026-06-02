@@ -22,6 +22,7 @@ Our resources, including **Terraform files** and detailed, step-by-step tutorial
 ## Cross Cloud Integration
 This aims to configure resources in one CSP to query resources in other CSP.
 
+* [AWS -> Anthropic Integration](./cross-cloud-integration/aws->anthropic/README.md)
 * [AWS -> Azure Integration (Includes Demo Video)](./cross-cloud-integration/aws->azure/README.md)
 * [AWS -> GCP Integration (Includes Demo Video)](./cross-cloud-integration/aws->gcp/README.md)
 * [AWS -> OpenAI Integration](./cross-cloud-integration/aws->openai/README.md)
