@@ -24,6 +24,7 @@ This aims to configure resources in one CSP to query resources in other CSP.
 
 * [AWS -> Anthropic Integration](./cross-cloud-integration/aws->anthropic/README.md)
 * [AWS -> Azure Integration (Includes Demo Video)](./cross-cloud-integration/aws->azure/README.md)
+* [AWS -> Databricks Integration](./cross-cloud-integration/aws->databricks/README.md)
 * [AWS -> GCP Integration (Includes Demo Video)](./cross-cloud-integration/aws->gcp/README.md)
 * [AWS -> OpenAI Integration](./cross-cloud-integration/aws->openai/README.md)
 * [AWS -> Snowflake Integration](./cross-cloud-integration/aws->snowflake/README.md)
